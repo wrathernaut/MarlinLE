@@ -3110,11 +3110,11 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-//#if NONE(TAZPro, TAZProXT, TAZ8, TAZ8XT)
+#if NONE(TAZPro, TAZProXT, TAZ8, TAZ8XT)
   #define AUTO_BED_LEVELING_BILINEAR
-//#else
-  //#define AUTO_BED_LEVELING_UBL
-//#endif
+#else
+  #define AUTO_BED_LEVELING_UBL
+#endif
 //#define MESH_BED_LEVELING
 
 /**
@@ -3241,7 +3241,7 @@
   //========================= Unified Bed Leveling ============================
   //===========================================================================
 
-  //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
+  #define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 15              // Set Mesh bounds as an inset region of the bed
   #if ANY(LULZBOT_LONG_BED, LULZBOT_LONG_BED_V2)
@@ -3252,7 +3252,7 @@
     #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
   #endif
 
-  //#define UBL_HILBERT_CURVE       // Use Hilbert distribution for less travel when probing multiple points
+  #define UBL_HILBERT_CURVE       // Use Hilbert distribution for less travel when probing multiple points
 
   //#define UBL_TILT_ON_MESH_POINTS         // Use nearest mesh points with G29 J for better Z reference
   //#define UBL_TILT_ON_MESH_POINTS_3POINT  // Use nearest mesh points with G29 J0 (3-point)
@@ -3768,11 +3768,16 @@
   #elif ANY(TAZ8, TAZ8XT) && ENABLED(TOOLHEAD_Galaxy_DualExtruder)
     #define WIPE_SEQUENCE_COMMANDS "T0\nG1 X-17 Y25 Z15 F4000\nG1 Z0\nM114\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 Z15\nM400"
     #define WIPE_SEQUENCE_2_COMMANDS "G1 X150 Y95 Z15 F4000\nT1\nG1 X296 Y25 Z10 F4000\nG1 Z0\nM114\nG1 X296 Y25\nG1 X296 Y95\nG1 X296 Y25\nG1 X296 Y95\nG1 X296 Y25\nG1 X296 Y95\nG1 X296 Y25\nG1 X296 Y95\nG1 X296 Y25\nG1 X296 Y95\nG1 X296 Y25\nG1 X296 Y95\nG1 Z15\nG1 X150\nT0\nM400"
+  #elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) //wrath
+    #define WIPE_SEQUENCE_COMMANDS "M117 NOT WIPING"
+    #define WIPE_SEQUENCE_2_COMMANDS "M117 NOT WIPING"
   #endif
 
   //Adapt clean nozzle gcode string to number of extruders
   #ifdef WIPE_SEQUENCE_2_COMMANDS
-    #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nT0\nG28\nM104 S170 T1\nM109 R170 T0\nM109 R170 T1\nG12\nM104 S0 T0\nM104 S0 T1\nM117 Wipe Complete"
+    #ifdef CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nT0\nG28\nM104 S170 T1\nM109 R170 T0\nM109 R170 T1\nG12\nM104 S0 T0\nM104 S0 T1\nM117 Wipe Complete"
+    #elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) CLEAN_NOZZLE_BUTTON_COMMANDS "M117 NOT WIPING" //wrath
+    #endif
   #else
     #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nG28\nM109 R170\nG12\nM104 S0\nM117 Wipe Complete"
   #endif
@@ -4077,7 +4082,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-//#define SPEAKER
+#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -4959,7 +4964,7 @@
 // If the servo can't reach the requested position, increase it.
 #if ANY(TAZ8, TAZ8XT) && ENABLED(TOOLHEAD_Galaxy_DualExtruder)
   #define SERVO_DELAY {100, LULZBOT_SERVO_E0_DELAY, LULZBOT_SERVO_E1_DELAY}
-#elif ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder)
+#elif ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder, TOOLHEAD_Orbiter_DualExtruder)
   #define SERVO_DELAY {LULZBOT_SERVO_E0_DELAY, LULZBOT_SERVO_E1_DELAY}
 #endif
 
