@@ -4,7 +4,6 @@
 *           as well as any options that apply to the printer.
 *
 */
-#define TAZPro //wrath
 
 /************** Uncomment a Tool Head Option From Below *********************/
 
@@ -19,10 +18,11 @@
 //#define TOOLHEAD_Universal_DualExtruder         // TAZ Pro Dual Extruder
 //#define TOOLHEAD_Galaxy_DualExtruder            // TAZ Pro Galaxy-Series Dual Extruders
 //#define TOOLHEAD_KangarooPaw_SingleExtruder     // Bio Single syringe
-#define TOOLHEAD_Orbiter_DualExtruder
+//#define TOOLHEAD_Orbiter_DualExtruder
+//#define TAZPro //wrath
 
 /************** Uncomment Options for Printer From Below *********************/
-#if EITHER(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //wrath add orbiter
+#if ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //wrath add orbiter
   #define SHOW_TOOL_HEAD_ID
   #define TOOL_HEAD_ID 13 //Since this is the only option for TAZ Pro Universal Dual Extruder fimrware, just set it.
 #elif ANY(TAZPro, TAZProXT, TAZ8, TAZ8XT)
@@ -2055,6 +2055,15 @@
 #endif
 
 /**
+ * fixed on toolhead with moving extruders
+ */
+#if DISABLED(LULZBOT_BLTouch) && ENABLED(FIX_MOUNTED_PROBE)
+  #define LULZBOT_PROBE_TYPE "Fixied Microswitch"
+  #define LULZBOT_SHORT_PROBE_TYPE
+#endif
+
+
+/**
  * Z Servo Probe, such as an endstop switch on a rotating arm.
  */
 #if ANY(TAZ8, TAZ8XT)
@@ -2261,7 +2270,7 @@
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
 #elif ANY(TAZPro, TAZProXT) && DISABLED(LULZBOT_BLTouch) && DISABLED(TOOLHEAD_Orbiter_DualExtruder)
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
-#elif BOTH(TazPro, TOOLHEAD_Orbiter_DualExtruder) //wrath
+#elif ENABLED(TazPro) && ENABLED(TOOLHEAD_Orbiter_DualExtruder) //wrath
   #define NOZZLE_TO_PROBE_OFFSET { 33.17, 0, 3.55}
 #elif ANY(TAZPro, TAZProXT) && ENABLED(LULZBOT_BLTouch)
   #define NOZZLE_TO_PROBE_OFFSET { -38, -2, -1.2 }
@@ -2328,6 +2337,11 @@
     #define PROBING_MARGIN -8
   #elif ENABLED(Workhorse)
     #define PROBING_MARGIN -10
+  #elif ENABLED(TOOLHEAD_Orbiter_DualExtruder)
+    #define PROBING_MARGIN 10
+    #define PROBING_MARGIN_BACK 10
+    #define PROBING_MARGIN_LEFT 10
+    #define PROBING_MARGIN_RIGHT 10
   #elif ANY(TAZPro, TAZProXT)
     #define PROBING_MARGIN -10
     #define PROBING_MARGIN_BACK -7
@@ -2567,7 +2581,7 @@
 #define Z_CLEARANCE_FOR_HOMING  15   // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                       // You'll need this much clearance above Z_MAX_POS to avoid grinding.
 
-#define Z_AFTER_HOMING         10   // (mm) Height to move to after homing (if Z was homed)
+//#define Z_AFTER_HOMING         10   // (mm) Height to move to after homing (if Z was homed)
 //#define XY_AFTER_HOMING { 10, 10 }  // (mm) Move to an XY position after homing (and raising Z)
 
 // #define EVENT_GCODE_AFTER_HOMING "G0 Z10\nM280 P0 S55"  // Commands to run after G28 (and move to XY_AFTER_HOMING)
@@ -3121,7 +3135,7 @@
  * Commands to execute at the START/end of G29 probing.
  * Useful to retract or move the Z probe out of the way.
  */
-#if enabled(TOOLHEAD_Orbiter_DualExtruder)
+#if ENABLED(TOOLHEAD_Orbiter_DualExtruder)
   #define EVENT_GCODE_BEFORE_G29 "M280 P1 S100\nM280 P0 S100" // WRATH
   #define EVENT_GCODE_AFTER_G29 "G1 Z10\nM280 P0 S55" 
  #endif
@@ -3241,7 +3255,7 @@
   //========================= Unified Bed Leveling ============================
   //===========================================================================
 
-  #define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
+  //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 15              // Set Mesh bounds as an inset region of the bed
   #if ANY(LULZBOT_LONG_BED, LULZBOT_LONG_BED_V2)
@@ -3776,7 +3790,8 @@
   //Adapt clean nozzle gcode string to number of extruders
   #ifdef WIPE_SEQUENCE_2_COMMANDS
     #ifdef CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nT0\nG28\nM104 S170 T1\nM109 R170 T0\nM109 R170 T1\nG12\nM104 S0 T0\nM104 S0 T1\nM117 Wipe Complete"
-    #elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) CLEAN_NOZZLE_BUTTON_COMMANDS "M117 NOT WIPING" //wrath
+    //#elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) 
+    //  #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 NOT WIPING" //wrath
     #endif
   #else
     #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nG28\nM109 R170\nG12\nM104 S0\nM117 Wipe Complete"
@@ -4997,7 +5012,7 @@
 #endif
 
 // Selection of tool head
-#if NONE(TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series, TOOLHEAD_SL_SE_HE, TOOLHEAD_HS_HSPLUS, TOOLHEAD_H175, TOOLHEAD_M175, TOOLHEAD_SK175, TOOLHEAD_SK285, TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder)
+#if NONE(TOOLHEAD_Orbiter_DualExtruder, TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series, TOOLHEAD_SL_SE_HE, TOOLHEAD_HS_HSPLUS, TOOLHEAD_H175, TOOLHEAD_M175, TOOLHEAD_SK175, TOOLHEAD_SK285, TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder)
   #error "Please select a Tool Head. See top of configuration.h for more information."
 #endif
 
