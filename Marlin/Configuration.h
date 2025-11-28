@@ -4,6 +4,7 @@
 *           as well as any options that apply to the printer.
 *
 */
+#define TAZPro //wrath
 
 /************** Uncomment a Tool Head Option From Below *********************/
 
@@ -18,9 +19,10 @@
 //#define TOOLHEAD_Universal_DualExtruder         // TAZ Pro Dual Extruder
 //#define TOOLHEAD_Galaxy_DualExtruder            // TAZ Pro Galaxy-Series Dual Extruders
 //#define TOOLHEAD_KangarooPaw_SingleExtruder     // Bio Single syringe
+#define TOOLHEAD_Orbiter_DualExtruder
 
 /************** Uncomment Options for Printer From Below *********************/
-#if ENABLED(TOOLHEAD_Universal_DualExtruder)
+#if EITHER(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //wrath add orbiter
   #define SHOW_TOOL_HEAD_ID
   #define TOOL_HEAD_ID 13 //Since this is the only option for TAZ Pro Universal Dual Extruder fimrware, just set it.
 #elif ANY(TAZPro, TAZProXT, TAZ8, TAZ8XT)
@@ -97,9 +99,9 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "LulzBot" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "Wrathernaut" // Who made the changes.
 #define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
-#define LULZBOT_FW_VERSION "2.1.3.0.48"
+#define LULZBOT_FW_VERSION "2.1.3.0.48-do"
 #define CAPABILITIES_REPORT
 #define EXTENDED_CAPABILITIES_REPORT
 
@@ -118,7 +120,7 @@
 #define SHOW_BOOTSCREEN
 
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
-#define SHOW_CUSTOM_BOOTSCREEN
+//#define SHOW_CUSTOM_BOOTSCREEN //wrath disable since it's modified
 
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
 //#define CUSTOM_STATUS_SCREEN_IMAGE
@@ -235,8 +237,8 @@
   #define MACHINE_UUID "5ee798fb-4062-4d35-8224-5e846ffb45a5"
   #define LULZBOT_WIPE
 #elif ENABLED(TAZPro)
-  #define CUSTOM_MACHINE_NAME "LulzBot TAZ Pro"
-  #define LULZBOT_LCD_MACHINE_NAME "LulzBot TAZ Pro"
+  #define CUSTOM_MACHINE_NAME "LulzBot TAZ Pro-DO" //wrath
+  #define LULZBOT_LCD_MACHINE_NAME "LulzBot TAZ Pro-DO" //wrath
   #define MACHINE_UUID "a952577d-8722-483a-999d-acdc9e772b7b"
   #define LULZBOT_FILAMENT_RUNOUT
   #define LULZBOT_WIPE
@@ -609,6 +611,37 @@
     #define LULZBOT_FILAMENT_HEAT_CAPACITY_PERMM  { 5.6e-3f, 5.6e-3f }
   #endif /* TOOLHEAD_Galaxy_DualExtruder */
 
+#if defined(TOOLHEAD_Orbiter_DualExtruder)
+    #define LULZBOT_LCD_TOOLHEAD_NAME              "Dueling Orbits"
+//          16 chars max                            ^^^^^^^^^^^^^^^
+    #define LULZBOT_M115_EXTRUDER_TYPE             "DualExtruder"
+    #define LULZBOT_TOOLHEAD_X_MAX_ADJ             -21 //wrath *VERIFY* these
+    #define LULZBOT_TOOLHEAD_X_MIN_ADJ             -21
+    #define LULZBOT_TOOLHEAD_Y_MAX_ADJ             -21
+    #define LULZBOT_TOOLHEAD_Y_MIN_ADJ             -21
+    #define LULZBOT_TOOLHEAD_Z_MAX_ADJ             -7
+    #define LULZBOT_TOOLHEAD_Z_MIN_ADJ             -7
+    #define LULZBOT_EXTRUDERS                       2
+    #define LULZBOT_TOOLCHANGE_ZRAISE               0
+    #define LULZBOT_NUM_SERVOS                      2
+    #define LULZBOT_SERVO_E0_DELAY                  1000
+    #define LULZBOT_SERVO_E1_DELAY                  1000
+    #define LULZBOT_SWITCHING_NOZZLE
+    #define LULZBOT_SWITCHING_NOZZLE_E1_SERVO_NR   1
+    #define LULZBOT_SWITCHING_NOZZLE_SERVO_ANGLES  { 55,   100}
+    #define LULZBOT_SWITCHING_NOZZLE_OPPOSING_SERVOS
+    #define LULZBOT_HOTEND_OFFSET_X                {0.0, 67.67}
+    #define LULZBOT_HOTEND_OFFSET_Y                {0.0,  0.0}
+    #define LULZBOT_E_STEPS                        690
+    #define LULZBOT_X_MAX_ENDSTOP_INVERTING        LULZBOT_NO_ENDSTOP
+    //#define LULZBOT_E3D_Titan_Aero_V6 //wrath disable
+    #define LULZBOT_TEMP_SENSOR_1                  5
+    #define LULZBOT_MOTOR_CURRENT_E0               750 // mA
+    #define LULZBOT_MOTOR_CURRENT_E1               750 // mA
+    #define SWITCHING_NOZZLE
+    #define ALL_EXTRUDERS_USE_T0_PART_COOLING_FAN
+#endif /* TOOLHEAD_Universal_DualExtruder */
+
 /********************************* OTHER TOOLHEADS ***************************/
 
 #if defined(TOOLHEAD_KangarooPaw_SingleExtruder)
@@ -628,7 +661,7 @@
 #define EXTRUDERS LULZBOT_EXTRUDERS
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
-#define DEFAULT_NOMINAL_FILAMENT_DIA 2.85
+#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75 //wrath
 
 // For Cyclops or any "multi-extruder" that shares a single nozzle.
 //#define SINGLENOZZLE
@@ -1093,7 +1126,7 @@
  * PIDTEMP : PID temperature control (~4.1K)
  * MPCTEMP : Predictive Model temperature control. (~1.8K without auto-tune)
  */
-#if ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Universal_DualExtruder)
+#if ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Orbiter_DualExtruder)
   #define PIDTEMP           // See the PID Tuning Guide at https://reprap.org/wiki/PID_Tuning
 #elif ANY(TOOLHEAD_Galaxy_Series, TOOLHEAD_Galaxy_DualExtruder)
   #define MPCTEMP         // See https://marlinfw.org/docs/features/model_predictive_control.html
@@ -1106,7 +1139,7 @@
   #if LULZBOT_EXTRUDERS > 1
     #define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
   #endif                                  // Set/get with G-code: M301 E[extruder number, 0-2]
-//TAZ 6 Single Extruder (W)
+  // TAZ 6 Single Extruder (W)
     #define TAZ6_STD_DEFAULT_Kp 28.79        //used to define stock PID.
     #define TAZ6_STD_DEFAULT_Ki 1.91
     #define TAZ6_STD_DEFAULT_Kd 108.51
@@ -1190,9 +1223,9 @@
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify up to one value per hotend here, according to your setup.
     // If there are fewer values, the last one applies to the remaining hotends.
-    #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-    #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-    #define DEFAULT_Kd_LIST { 114.00, 114.00 }
+    #define DEFAULT_Kp_LIST {  24.51,  24.51 } //wrath dualorb settings
+    #define DEFAULT_Ki_LIST {   2.27,   2.27 }
+    #define DEFAULT_Kd_LIST {  66.17,  66.17 }
   #else
     #define DEFAULT_Kp  22.20
     #define DEFAULT_Ki   1.08
@@ -2009,13 +2042,13 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-//#define FIX_MOUNTED_PROBE
+#define FIX_MOUNTED_PROBE //wrath Microswitch
 
 /**
  * Use the nozzle as the probe, as with a conductive
  * nozzle system or a piezo-electric smart effector.
  */
-#if DISABLED(LULZBOT_BLTouch)
+#if DISABLED(LULZBOT_BLTouch) && DISABLED(FIX_MOUNTED_PROBE)
   #define NOZZLE_AS_PROBE
   #define LULZBOT_PROBE_TYPE "Conductive Washers"
   #define LULZBOT_SHORT_PROBE_TYPE
@@ -2226,8 +2259,10 @@
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
 #elif ANY(TAZ6, Workhorse) && ENABLED(TOOLHEAD_Galaxy_Series)
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
-#elif ANY(TAZPro, TAZProXT) && DISABLED(LULZBOT_BLTouch)
+#elif ANY(TAZPro, TAZProXT) && DISABLED(LULZBOT_BLTouch) && DISABLED(TOOLHEAD_Orbiter_DualExtruder)
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
+#elif BOTH(TazPro, TOOLHEAD_Orbiter_DualExtruder) //wrath
+  #define NOZZLE_TO_PROBE_OFFSET { 33.17, 0, 3.55}
 #elif ANY(TAZPro, TAZProXT) && ENABLED(LULZBOT_BLTouch)
   #define NOZZLE_TO_PROBE_OFFSET { -38, -2, -1.2 }
 #elif ANY(TAZ8, TAZ8XT)
@@ -2400,7 +2435,7 @@
 #define PROBE_OFFSET_ZMAX  5    // (mm)
 
 // Enable the M48 repeatability test to test probe accuracy
-#if ENABLED(LULZBOT_BLTouch)
+#if ANY(LULZBOT_BLTouch, TOOLHEAD_Orbiter_DualExtruder) //wrath
   #define Z_MIN_PROBE_REPEATABILITY_TEST
 #endif
 
@@ -2430,10 +2465,10 @@
 //#define DELAY_BEFORE_PROBING 200  // (ms) To prevent vibrations from triggering piezo sensors
 
 // Require minimum nozzle and/or bed temperature for probing
-//#define PREHEAT_BEFORE_PROBING
+#define PREHEAT_BEFORE_PROBING //wrath
 #if ENABLED(PREHEAT_BEFORE_PROBING)
   //#define PROBING_NOZZLE_TEMP 160   // (°C) Only applies to E0 at this time
-  //#define PROBING_BED_TEMP     50
+  #define PROBING_BED_TEMP     50 //wrath
 #endif
 
 // For Inverting Stepper Enable Pins (Active Low) use 0, Non Inverting (Active High) use 1
@@ -2532,10 +2567,11 @@
 #define Z_CLEARANCE_FOR_HOMING  15   // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                       // You'll need this much clearance above Z_MAX_POS to avoid grinding.
 
-//#define Z_AFTER_HOMING         10   // (mm) Height to move to after homing (if Z was homed)
+#define Z_AFTER_HOMING         10   // (mm) Height to move to after homing (if Z was homed)
 //#define XY_AFTER_HOMING { 10, 10 }  // (mm) Move to an XY position after homing (and raising Z)
 
-//#define EVENT_GCODE_AFTER_HOMING "M300 P440 S200"  // Commands to run after G28 (and move to XY_AFTER_HOMING)
+// #define EVENT_GCODE_AFTER_HOMING "G0 Z10\nM280 P0 S55"  // Commands to run after G28 (and move to XY_AFTER_HOMING)
+
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
@@ -2631,7 +2667,16 @@
   #define LULZBOT_Z_MAX_POS 298
 
 #elif ENABLED(TAZPro)
-  #if defined(TOOLHEAD_Universal_DualExtruder)
+  #if defined(TOOLHEAD_Orbiter_DualExtruder) //*verify
+    #define X_BED_SIZE        281
+    #define Y_BED_SIZE        283
+    #define LULZBOT_X_MIN_POS  -7
+    #define LULZBOT_Y_MIN_POS -13
+    #define LULZBOT_X_MAX_POS 308
+    #define LULZBOT_Y_MAX_POS 315
+    #define LULZBOT_Z_MIN_POS  -9
+    #define LULZBOT_Z_MAX_POS 299
+  #elif defined(TOOLHEAD_Universal_DualExtruder)
     #define X_BED_SIZE        281
     #define Y_BED_SIZE        283
     #define LULZBOT_X_MIN_POS  -7
@@ -2966,7 +3011,7 @@
   // Commands to execute on filament runout.
   // With multiple runout sensors use the %c placeholder for the current tool in commands (e.g., "M600 T%c")
   // NOTE: After 'M412 H1' the host handles filament runout and this script does not apply.
-  #define FILAMENT_RUNOUT_SCRIPT "M125"
+  #define FILAMENT_RUNOUT_SCRIPT "M125" //park
 
   //#define TOOL_SPECIFIC_SCRIPT  // Adding Tool specific commands to runout script
 
@@ -3073,9 +3118,13 @@
 //#define MESH_BED_LEVELING
 
 /**
- * Commands to execute at the end of G29 probing.
+ * Commands to execute at the START/end of G29 probing.
  * Useful to retract or move the Z probe out of the way.
  */
+#if enabled(TOOLHEAD_Orbiter_DualExtruder)
+  #define EVENT_GCODE_BEFORE_G29 "M280 P1 S100\nM280 P0 S100" // WRATH
+  #define EVENT_GCODE_AFTER_G29 "G1 Z10\nM280 P0 S55" 
+ #endif
 //#define EVENT_GCODE_AFTER_G29 "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
 
 /**
@@ -3100,7 +3149,7 @@
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of flash!
  */
-#define DEBUG_LEVELING_FEATURE
+//#define DEBUG_LEVELING_FEATURE //wrath
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY)
   // Set a height for the start of manual adjustment
@@ -3336,7 +3385,7 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
-#if ANY(TAZ6, SideKick_289, SideKick_747)
+#if ANY(TAZ6, SideKick_289, SideKick_747, TOOLHEAD_Orbiter_DualExtruder)
   #define Z_SAFE_HOMING
 #endif
 
@@ -3344,7 +3393,7 @@
   #if ENABLED(TAZ6)
     #define Z_SAFE_HOMING_X_POINT -20.1  // (mm) X point for Z homing
     #define Z_SAFE_HOMING_Y_POINT 259.5  // (mm) Y point for Z homing
-  #elif ANY(SideKick_289, SideKick_747)
+  #elif ANY(SideKick_289, SideKick_747, TAZPro)
     #define Z_SAFE_HOMING_X_POINT (X_CENTER)  // (mm) X point for Z homing
     #define Z_SAFE_HOMING_Y_POINT (Y_BED_SIZE/2)  // (mm) Y point for Z homing
   //#define Z_SAFE_HOMING_POINT_ABSOLUTE  // Ignore home offsets (M206) for Z homing position
@@ -3399,7 +3448,7 @@
  *    +-------------->X     +-------------->X     +-------------->Y
  *     XY_SKEW_FACTOR        XZ_SKEW_FACTOR        YZ_SKEW_FACTOR
  */
-//#define SKEW_CORRECTION
+#define SKEW_CORRECTION //wrath
 
 #if ENABLED(SKEW_CORRECTION)
   // Input all length measurements here:
@@ -3424,7 +3473,7 @@
   #endif
 
   // Enable this option for M852 to set skew at runtime
-  //#define SKEW_CORRECTION_GCODE
+  #define SKEW_CORRECTION_GCODE
 #endif
 
 //=============================================================================
@@ -3666,7 +3715,7 @@
   #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series)
     #define NOZZLE_CLEAN_START_POINT { 303, 95, 0.5 }
     #define NOZZLE_CLEAN_END_POINT   { 303, 25, 0.5 }
-  #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder)
+  #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //*VERIFY
     #define NOZZLE_CLEAN_START_POINT {{ -17, 95, 0 }, { 297, 95, 0 }}
     #define NOZZLE_CLEAN_END_POINT   {{ -17, 25, 0 }, { 297, 25, 0 }}
   #elif ANY(TAZ8, TAZ8XT) && ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series)
