@@ -18,8 +18,7 @@
 //#define TOOLHEAD_Universal_DualExtruder         // TAZ Pro Dual Extruder
 //#define TOOLHEAD_Galaxy_DualExtruder            // TAZ Pro Galaxy-Series Dual Extruders
 //#define TOOLHEAD_KangarooPaw_SingleExtruder     // Bio Single syringe
-//#define TOOLHEAD_Orbiter_DualExtruder
-//#define TAZPro //wrath
+//#define TOOLHEAD_Orbiter_DualExtruder           // Custom Dual Extruder by Wrathernaut
 
 /************** Uncomment Options for Printer From Below *********************/
 #if ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //wrath add orbiter
@@ -615,10 +614,10 @@
     #define LULZBOT_LCD_TOOLHEAD_NAME              "Dueling Orbits"
 //          16 chars max                            ^^^^^^^^^^^^^^^
     #define LULZBOT_M115_EXTRUDER_TYPE             "DualExtruder"
-    #define LULZBOT_TOOLHEAD_X_MAX_ADJ             -21 //wrath *VERIFY* these
-    #define LULZBOT_TOOLHEAD_X_MIN_ADJ             -21
-    #define LULZBOT_TOOLHEAD_Y_MAX_ADJ             -21
-    #define LULZBOT_TOOLHEAD_Y_MIN_ADJ             -21
+    #define LULZBOT_TOOLHEAD_X_MAX_ADJ             -29 // first measurement test
+    #define LULZBOT_TOOLHEAD_X_MIN_ADJ             -29 // to reach -36
+    #define LULZBOT_TOOLHEAD_Y_MAX_ADJ             -24
+    #define LULZBOT_TOOLHEAD_Y_MIN_ADJ             -24
     #define LULZBOT_TOOLHEAD_Z_MAX_ADJ             -7
     #define LULZBOT_TOOLHEAD_Z_MIN_ADJ             -7
     #define LULZBOT_EXTRUDERS                       2
@@ -2681,7 +2680,7 @@
   #define LULZBOT_Z_MAX_POS 298
 
 #elif ENABLED(TAZPro)
-  #if defined(TOOLHEAD_Orbiter_DualExtruder) //*verify
+  #if defined(TOOLHEAD_Orbiter_DualExtruder) // keep same, adjust w/toolhead limits elsewhere
     #define X_BED_SIZE        281
     #define Y_BED_SIZE        283
     #define LULZBOT_X_MIN_POS  -7
@@ -3729,7 +3728,7 @@
   #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series)
     #define NOZZLE_CLEAN_START_POINT { 303, 95, 0.5 }
     #define NOZZLE_CLEAN_END_POINT   { 303, 25, 0.5 }
-  #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder, TOOLHEAD_Orbiter_DualExtruder) //*VERIFY
+  #elif ANY(TAZPro, TAZProXT) && ANY(TOOLHEAD_Universal_DualExtruder, TOOLHEAD_Galaxy_DualExtruder)
     #define NOZZLE_CLEAN_START_POINT {{ -17, 95, 0 }, { 297, 95, 0 }}
     #define NOZZLE_CLEAN_END_POINT   {{ -17, 25, 0 }, { 297, 25, 0 }}
   #elif ANY(TAZ8, TAZ8XT) && ANY(TOOLHEAD_Legacy_Universal, TOOLHEAD_Galaxy_Series)
@@ -3741,6 +3740,9 @@
   #elif ANY(Workhorse, TAZ6)
     #define NOZZLE_CLEAN_START_POINT { -17, 95, 0 }
     #define NOZZLE_CLEAN_END_POINT   { -17, 25, 0 }
+  #elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) //in case wipe is activated, keep up and away, where you can wipe manually.
+    #define NOZZLE_CLEAN_START_POINT {{ 140, 0, 100 }, { 140, 0, 100 }}
+    #define NOZZLE_CLEAN_END_POINT   {{ 140, 10, 100 }, { 140, 10, 100 }}
   #else
     #define NOZZLE_CLEAN_START_POINT { 115, 297.5, 0 }
     #define NOZZLE_CLEAN_END_POINT   { 160, 297.5, 0 }
@@ -3789,11 +3791,12 @@
 
   //Adapt clean nozzle gcode string to number of extruders
   #ifdef WIPE_SEQUENCE_2_COMMANDS
-    #ifdef CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nT0\nG28\nM104 S170 T1\nM109 R170 T0\nM109 R170 T1\nG12\nM104 S0 T0\nM104 S0 T1\nM117 Wipe Complete"
-    //#elif ENABLED(TOOLHEAD_Orbiter_DualExtruder) 
-    //  #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 NOT WIPING" //wrath
+    #ifdef TOOLHEAD_Orbiter_DualExtruder 
+      #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 NOT WIPING" //wrath
+      #else
+        #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nT0\nG28\nM104 S170 T1\nM109 R170 T0\nM109 R170 T1\nG12\nM104 S0 T0\nM104 S0 T1\nM117 Wipe Complete"
     #endif
-  #else
+    #else
     #define CLEAN_NOZZLE_BUTTON_COMMANDS "M117 Wiping Nozzle\nG28\nM109 R170\nG12\nM104 S0\nM117 Wipe Complete"
   #endif
 
