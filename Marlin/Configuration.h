@@ -639,8 +639,8 @@
     #define LULZBOT_MOTOR_CURRENT_E1               750 // mA
     #define SWITCHING_NOZZLE
     #define ALL_EXTRUDERS_USE_T0_PART_COOLING_FAN
-    #define DEBUG_TOOL_CHANGE
-    #define DEBUG_LEVELING_FEATURE
+    #define DEBUG_TOOL_CHANGE //wrath -disable after troubleshooting
+    #define DEBUG_LEVELING_FEATURE //wrath -disable after troubleshooting
 #endif /* TOOLHEAD_Universal_DualExtruder */
 
 /********************************* OTHER TOOLHEADS ***************************/
