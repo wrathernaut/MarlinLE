@@ -640,6 +640,7 @@
     #define SWITCHING_NOZZLE
     #define ALL_EXTRUDERS_USE_T0_PART_COOLING_FAN
     #define DEBUG_TOOL_CHANGE
+    #define DEBUG_LEVELING_FEATURE
 #endif /* TOOLHEAD_Universal_DualExtruder */
 
 /********************************* OTHER TOOLHEADS ***************************/
