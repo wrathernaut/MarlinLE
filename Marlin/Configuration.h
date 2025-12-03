@@ -2271,8 +2271,8 @@
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
 #elif ANY(TAZPro, TAZProXT) && DISABLED(LULZBOT_BLTouch) && DISABLED(TOOLHEAD_Orbiter_DualExtruder)
   #define NOZZLE_TO_PROBE_OFFSET { 0, 0, -1.2 }
-#elif ENABLED(TazPro) && ENABLED(TOOLHEAD_Orbiter_DualExtruder) //wrath
-  #define NOZZLE_TO_PROBE_OFFSET { 33.17, 0, 3.55}
+#elif ENABLED(TAZPro) && ENABLED(TOOLHEAD_Orbiter_DualExtruder) //wrath
+  #define NOZZLE_TO_PROBE_OFFSET { 33.17, 0, 3.47}
 #elif ANY(TAZPro, TAZProXT) && ENABLED(LULZBOT_BLTouch)
   #define NOZZLE_TO_PROBE_OFFSET { -38, -2, -1.2 }
 #elif ANY(TAZ8, TAZ8XT)
