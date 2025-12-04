@@ -1298,24 +1298,25 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
           fast_line_to_current(Z_AXIS);
         }
 
-        + if (planner.leveling_active) {
-          + if (TERN(AUTO_BED_LEVELING_UBL, false, planner.leveling_active)) {
-              DEBUG_ECHOLNPGM("Mesh is on, correcting for difference between tools.");
-              const float curr_z = current_position.z;
-              DEBUG_ECHOLNPGM("   Current Z Pos ", curr_z);
-              const float old_mesh_height = bedlevel.get_z_correction(current_position);
-              DEBUG_ECHOLNPGM("   Mesh Height at Current Pos { ", old_mesh_height, " }");
-              const float new_mesh_height = bedlevel.get_z_correction(current_position + diff);
-              DEBUG_ECHOLNPGM("   Mesh Height at New Pos { ", new_mesh_height, " }");
-              const float mesh_height_diff = new_mesh_height - old_mesh_height;
-              DEBUG_ECHOLNPGM("   Mesh Height Diff { ", mesh_height_diff, " }");
-              current_position.z += mesh_height_diff;
-              DEBUG_ECHOLNPGM("   Moving to Z = ", current_position.z);
-              fast_line_to_current(Z_AXIS);
-              current_position.z = curr_z;
-              DEBUG_ECHOLNPGM("   Setting Z Pos ", current_position.z);
+        // If bed leveling is on move the Z to compensate for the difference in mesh height.
+        if (planner.leveling_active) {
+          if (TERN(AUTO_BED_LEVELING_UBL, false, planner.leveling_active)) {
+            DEBUG_ECHOLNPGM("Mesh is on, correcting for difference between tools.");
+            const float curr_z = current_position.z;
+            DEBUG_ECHOLNPGM("   Current Z Pos ", curr_z);
+            const float old_mesh_height = bedlevel.get_z_correction(current_position);
+            DEBUG_ECHOLNPGM("   Mesh Height at Current Pos { ", old_mesh_height, " }");
+            const float new_mesh_height = bedlevel.get_z_correction(current_position + diff);
+            DEBUG_ECHOLNPGM("   Mesh Height at New Pos { ", new_mesh_height, " }");
+            const float mesh_height_diff = new_mesh_height - old_mesh_height;
+            DEBUG_ECHOLNPGM("   Mesh Height Diff { ", mesh_height_diff, " }");
+            current_position.z += mesh_height_diff;
+            DEBUG_ECHOLNPGM("   Moving to Z = ", current_position.z);
+            fast_line_to_current(Z_AXIS);
+            current_position.z = curr_z;
+            DEBUG_ECHOLNPGM("   Setting Z Pos ", current_position.z);
           }
-        
+        }
         #if SWITCHING_NOZZLE_TWO_SERVOS
          lower_nozzle(new_tool);
         #else
