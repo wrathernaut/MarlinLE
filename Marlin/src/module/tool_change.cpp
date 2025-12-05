@@ -1282,47 +1282,23 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
         magnetic_switching_toolhead_tool_change(new_tool, no_move);
       #elif ENABLED(ELECTROMAGNETIC_SWITCHING_TOOLHEAD)                 // Magnetic Switching ToolChanger
         em_switching_toolhead_tool_change(new_tool, no_move);
-      #elif ENABLED(SWITCHING_NOZZLE)   // Switching Nozzle
+      #elif ENABLED(SWITCHING_NOZZLE)                                   // Switching Nozzle
         // Raise by a configured distance to avoid workpiece, except with
         // SWITCHING_NOZZLE_TWO_SERVOS, as both nozzles will lift instead.
         TERN_(SWITCHING_NOZZLE_TWO_SERVOS, raise_nozzle(old_tool));
         if (!no_move) {
-          DEBUG_ECHOLNPGM("Current Pos Post Raise Nozzle { ", current_position.x, ", ", current_position.y, ", ", current_position.z, " }");
           const float newz = current_position.z + _MAX(-diff.z, 0.0);
-          DEBUG_ECHOLNPGM("Switching Offset Tool XYZ by { ", diff.x, ", ", diff.y, ", ", diff.z, " }");
           // Check if Z has space to compensate at least z_offset, and if not, just abort now
           const float maxz = _MIN(TERN(HAS_SOFTWARE_ENDSTOPS, soft_endstop.max.z, Z_MAX_POS), Z_MAX_POS);
           if (newz > maxz) return;
-          DEBUG_ECHOLNPGM("New / Max Z / Curr Z { ", newz, ", ", maxz, ", ", current_position.z, " }");
           current_position.z = _MIN(newz + toolchange_settings.z_raise, maxz);
           fast_line_to_current(Z_AXIS);
         }
-
-        // If bed leveling is on move the Z to compensate for the difference in mesh height.
-        if (planner.leveling_active) {
-          if (TERN(AUTO_BED_LEVELING_UBL, false, planner.leveling_active)) {
-            DEBUG_ECHOLNPGM("Mesh is on, correcting for difference between tools.");
-            const float curr_z = current_position.z;
-            DEBUG_ECHOLNPGM("   Current Z Pos ", curr_z);
-            const float old_mesh_height = bedlevel.get_z_correction(current_position);
-            DEBUG_ECHOLNPGM("   Mesh Height at Current Pos { ", old_mesh_height, " }");
-            const float new_mesh_height = bedlevel.get_z_correction(current_position + diff);
-            DEBUG_ECHOLNPGM("   Mesh Height at New Pos { ", new_mesh_height, " }");
-            const float mesh_height_diff = new_mesh_height - old_mesh_height;
-            DEBUG_ECHOLNPGM("   Mesh Height Diff { ", mesh_height_diff, " }");
-            current_position.z += mesh_height_diff;
-            DEBUG_ECHOLNPGM("   Moving to Z = ", current_position.z);
-            fast_line_to_current(Z_AXIS);
-            current_position.z = curr_z;
-            DEBUG_ECHOLNPGM("   Setting Z Pos ", current_position.z);
-          }
-        }
-        #if SWITCHING_NOZZLE_TWO_SERVOS
-         lower_nozzle(new_tool);
+        #if SWITCHING_NOZZLE_TWO_SERVOS                                 // Switching Nozzle with two servos
+          lower_nozzle(new_tool);
         #else
           move_nozzle_servo(new_tool);
         #endif
-
         DEBUG_ECHOLNPGM("Current Pos Post Lower Nozzle { ", current_position.x, ", ", current_position.y, ", ", current_position.z, " }");
       #elif ANY(MECHANICAL_SWITCHING_EXTRUDER, MECHANICAL_SWITCHING_NOZZLE)
         if (!no_move) {
